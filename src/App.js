@@ -160,7 +160,7 @@ function App() {
 
       <section className="call-card" aria-label="Letify calling prototype">
         <div className="card-heading">
-          <div><div className="section-kicker">VOICE CHANNEL</div><h2>{mode === "active" ? "You're in a call" : mode === "offer" ? "Start your connection" : mode === "answer" ? "Send your reply" : "Start a conversation"}</h2></div>
+          <div><div className="section-kicker">VOICE CHANNEL</div><h2>{mode === "active" ? "You're in a call" : mode === "connecting" ? "Connecting…" : mode === "offer" ? "Start your connection" : mode === "answer" ? "Send your reply" : "Start a conversation"}</h2></div>
           <span className={status.includes("active") || status.includes("Connected") ? "status-pill online" : "status-pill"}><span />{status}</span>
         </div>
 
