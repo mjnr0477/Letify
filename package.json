@@ -2,6 +2,7 @@
   "name": "letify",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://mjnr0477.github.io/Letify",
   "dependencies": {
     "firebase": "^10.5.0",
     "react": "^18.0.0",
