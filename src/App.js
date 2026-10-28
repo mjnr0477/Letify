@@ -51,7 +51,7 @@ function App() {
     };
     pc.onconnectionstatechange = () => {
       const state = pc.connectionState;
-      if (state === "connected") setStatus("Connected · voice channel active");
+      if (state === "connected") { setStatus("Connected · voice channel active"); setMode("active"); }
       else if (state === "connecting") setStatus("Connecting to peer…");
       else if (state === "disconnected") setStatus("Connection interrupted");
       else if (state === "failed") setStatus("Connection failed · this network may require a relay");
@@ -110,7 +110,7 @@ function App() {
       if (parsed.type !== "answer" || !parsed.sdp) throw new Error("Paste the recipient's answer code.");
       if (!pcRef.current) throw new Error("Start a call first, then paste the reply.");
       await pcRef.current.setRemoteDescription(parsed);
-      setMode("active");
+      setMode("connecting");
       setStatus("Answer received · connecting…");
     } catch (e) {
       setError(e instanceof SyntaxError ? "The reply code is incomplete or invalid JSON." : e.message);
@@ -148,7 +148,7 @@ function App() {
   return (
     <main className="app-shell">
       <header className="topbar">
-        <a className="brand" href="/" aria-label="Letify home"><span className="brand-mark">L</span><span>letify</span></a>
+        <a className="brand" href={process.env.PUBLIC_URL || "/"} aria-label="Letify home"><span className="brand-mark">L</span><span>letify</span></a>
         <span className="prototype-tag"><span className="pulse" /> CHANNEL LAB</span>
       </header>
 
@@ -165,9 +165,9 @@ function App() {
         </div>
 
         {mode === "start" && <>
-          <label className="field-label" htmlFor="phone">Contact number <span>optional for this prototype</span></label>
+          <label className="field-label" htmlFor="phone">Phone number <span>identity lookup not connected yet</span></label>
           <div className="phone-field"><span className="phone-prefix">＋</span><input id="phone" type="tel" autoComplete="tel" placeholder="Enter a phone number" value={number} onChange={(e) => setNumber(e.target.value)} /></div>
-          <p className="hint">This prototype does not dial ordinary mobile numbers. The number is a contact label only; both people currently exchange connection codes manually.</p>
+          <p className="hint">The number is not looked up or dialed yet. This test proves the voice path first; registered-user lookup and automatic ringing are the next build stage.</p>
           <button className="primary-button" onClick={startCall} disabled={busy}>{busy ? <><span className="spinner" /> Preparing…</> : <>Create call link <span>↗</span></>}</button>
           <div className="or-divider"><span /> OR <span /></div>
           <button className="secondary-button" onClick={() => { setMode("join"); setError(""); }}>I have a call code <span>→</span></button>
@@ -189,8 +189,8 @@ function App() {
           <button className="text-button" onClick={endCall}>Cancel call</button>
         </>}
 
-        {mode === "active" && <>
-          <div className="call-avatar"><span> L </span><div><strong>{number || "Letify contact"}</strong><p>Voice connection</p></div></div>
+        {(mode === "active" || mode === "connecting") && <>
+          <div className="call-avatar"><span> L </span><div><strong>{number || "Letify contact"}</strong><p>{mode === "connecting" ? "Establishing voice connection…" : "Voice connection"}</p></div></div>
           <div className="call-controls"><button className={muted ? "round-control selected" : "round-control"} onClick={toggleMute} aria-label={muted ? "Unmute microphone" : "Mute microphone"}><span>{muted ? "×" : "♩"}</span><small>{muted ? "Unmute" : "Mute"}</small></button><button className="hangup-button" onClick={endCall} aria-label="End call">✕</button><span className="end-label">End call</span></div>
           <p className="hint">If the call does not connect, the networks may require a TURN relay. This prototype has no relay service configured.</p>
         </>}
@@ -206,7 +206,7 @@ function App() {
         <div><span className="principle-icon">◇</span><h3>Privacy by design</h3><p>Connection codes can contain network details. Share them only with the intended person.</p></div>
         <div><span className="principle-icon">◎</span><h3>No false promises</h3><p>We'll only claim free offline calling after the transport is proven on real phones.</p></div>
       </section>
-      <footer><a className="brand footer-brand" href="/"><span className="brand-mark">L</span><span>letify</span></a><span>Built for connection. Tested with honesty.</span><span>EARLY EXPERIMENT · NOT FOR EMERGENCY CALLS</span></footer>
+      <footer><a className="brand footer-brand" href={process.env.PUBLIC_URL || "/"}><span className="brand-mark">L</span><span>letify</span></a><span>Built for connection. Tested with honesty.</span><span>EARLY EXPERIMENT · NOT FOR EMERGENCY CALLS</span></footer>
     </main>
   );
 }
